@@ -1,57 +1,41 @@
+#include <iostream>
+#include <string>
 #include "modAlphaCipher.h"
-Cipher::Cipher(int password)
+using namespace std;
+modAlphaCipher::modAlphaCipher(const int skey)
 {
-    this->p=password;
+    key = skey;
 }
-wstring Cipher::zakodirovatCipher(Cipher w, wstring& s)
+string modAlphaCipher::encrypt(string& open_text)
 {
-    wstring Output;
-    int v;
-    int dlina=s.size();
-    if (s.size()%w.p!=0) {
-        v=s.size()/w.p+1;
-    } else {
-        v=s.size()/w.p;
-    }
-    wchar_t x[v][w.p];
-    int p=0;
-    for (int i=0; i<v; ++i) {
-        for (int k=0; k<w.p; ++k) {
-            if (p<s.length()) {
-                x[i][k]=s[p];
-                ++p;
-            } else x[i][k]=' ';
+    int t_key = key;
+    while (open_text.size() % key != 0) {
+        {
+            open_text.push_back('*');
         }
+        cout<<open_text<<endl;
     }
-    for (int i=0; i<w.p; ++i) {
-        for (int k=0; k<v; ++k) {
-            Output+=x[k][i];
+    string work = "";
+    for (int i=0; i<key; i++) {
+        for (unsigned long int j=0; j<(open_text.size() /
+                                       key); j++) {
+            work.push_back(open_text[t_key-1]);
+            t_key +=key;
         }
+        t_key = key-i-1;
     }
-    return Output;
+    return work;
 }
-wstring Cipher::raskodirovatCipher(Cipher w, wstring& s)
+string modAlphaCipher::decrypt(string& cipher_text)
 {
-    int v;
-    if (s.size()%w.p!=0) {
-        v=s.size()/w.p+1;
-    } else {
-        v=s.size()/w.p;
-    }
-    wchar_t x[v][w.p];
-    int p=0;
-    for (int i=0; i<w.p; ++i) {
-        for (int k=0; k<v; ++k) {
-            x[k][i]=s[p];
-            ++p;
+    int t_key = cipher_text.size() / key;
+    string work = "";
+    for (unsigned long int i=0; i<(cipher_text.size() / key); i++) {
+        for (int j=0; j<key; j++) {
+            work.push_back(cipher_text[cipher_text.size() - t_key]);
+            t_key += cipher_text.size() / key;
         }
+        t_key = cipher_text.size() / key-i-1;
     }
-    wstring deOutput;
-    for (int i=0; i<v; ++i) {
-        for (int k=0; k<w.p; ++k) {
-            deOutput+=x[i][k];
-        }
-    }
-    return deOutput;
+    return work;
 }
-
