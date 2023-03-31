@@ -1,46 +1,60 @@
 #include <iostream>
 #include <cctype>
 #include "modAlphaCipher.h"
+#include <codecvt>
+#include <cstdlib>
 #include <locale>
 using namespace std;
 bool isValid(const wstring& s)
 {
+    locale loc("ru_RU.UTF-8");
+    wstring_convert<codecvt_utf8<wchar_t>, wchar_t> codec;
     for(auto c:s)
-        if (!iswalpha(c) || !iswupper(c))
+        if (!isalpha(c,loc) || !isupper(c,loc))
             return false;
     return true;
 }
 int main(int argc, char **argv)
 {
     locale loc("ru_RU.UTF-8");
-    locale::global(loc);
-    wstring key;
-    wstring text;
+    wstring_convert<codecvt_utf8<wchar_t>, wchar_t> codec;
+    wstring wres;
+    string res;
+    string key;
+    string text;
     unsigned op;
-    wcout<<L"Cipher ready. Input key: ";
-    wcin>>key;
-    if (!isValid(key)) {
-        wcerr<<L"key not valid\n";
+    cout<<"Cipher ready. Input key: ";
+    cin>>key;
+    wstring wkey = codec.from_bytes(key);
+    if (!isValid(wkey)) {
+        cerr<<"key not valid\n";
         return 1;
     }
-    wcout<<L"Key loaded\n";
-    modAlphaCipher cipher(key);
+    cout<<"Key loaded\n";
+    modAlphaCipher cipher(wkey);
     do {
-        wcout<<L"Cipher ready. Input operation (0-exit, 1-encrypt, 2-decrypt): ";
-        wcin>>op;
-        if (op > 2) {
-            wcout<<L"Illegal operation\n";
-        } else if (op >0) {
-            wcout<<L"Cipher ready. Input text: ";
-            wcin>>text;
-            if (isValid(text)) {
+        cout<<"Cipher ready. Input operation (0-exit, 1-encrypt, 2-decrypt): ";
+            cin>>op;
+            if (op > 2) {
+        cout<<"Illegal operation\n";
+    } else if (op > 0) {
+        cout<<"Cipher ready. Input text: ";
+        cin>>text;
+        wstring wtext = codec.from_bytes(text);
+            if (isValid(wtext)) {
                 if (op==1) {
-                    wcout<<L"Encrypted text: "<<cipher.encrypt(text)<<endl;
+                    wres =
+                        cipher.encrypt(wtext);
+                    res = codec.to_bytes(wres);
+                    cout<<"Encrypted text: "<<res<<endl;
                 } else {
-                    wcout<<L"Decrypted text: "<<cipher.decrypt(text)<<endl;
+                    wres =
+                        cipher.decrypt(wtext);
+                    res = codec.to_bytes(wres);
+                    cout<<"Decrypted text: "<<res<<endl;
                 }
             } else {
-                wcout<<L"Operation aborted: invalid text\n";
+                cout<<"Operation aborted: invalid text\n";
             }
         }
     } while (op!=0);
