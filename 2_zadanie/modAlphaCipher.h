@@ -1,13 +1,13 @@
 #pragma once
 #include <string>
 using namespace std;
-class Cipher
+class modAlphaCipher
 {
 private:
-    int p;
+int key;
 public:
-    Cipher()=delete;
-    Cipher(int w);
-    wstring zakodirovatCipher(Cipher w, wstring& s);
-    wstring raskodirovatCipher(Cipher w, wstring& s);
+modAlphaCipher()=delete;//запретим конструктор без параметров
+modAlphaCipher(const int skey);//конструктор для установки ключа
+string encrypt(string& open_text);//зашифрование
+string decrypt(string& cipher_text);//расшифрование
 };
