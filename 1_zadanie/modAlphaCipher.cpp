@@ -1,38 +1,67 @@
+#include <vector>
+#include <string>
+#include <map>
+#include <codecvt>
+#include <cstdlib>
+#include <locale>
 #include "modAlphaCipher.h"
-modAlphaCipher::modAlphaCipher(const wstring& skey)
+using namespace std;
+modAlphaCipher::modAlphaCipher(const std::wstring& skey)
 {
+    locale loc("ru_RU.UTF-8");
+    wstring_convert<codecvt_utf8<wchar_t>, wchar_t> codec;
+    wnumAlpha = codec.from_bytes(numAlpha);
     for (unsigned i=0; i<numAlpha.size(); i++) {
-        alphaNum[numAlpha[i]]=i;
+        alphaNum[wnumAlpha[i]]=i;
     }
     key = convert(skey);
 }
-wstring modAlphaCipher::encrypt(const wstring& open_text)
+std::wstring modAlphaCipher::encrypt(const std::wstring&
+                                     open_text)
 {
-    vector<int> work = convert(open_text);
+    locale loc("ru_RU.UTF-8");
+    wstring_convert<codecvt_utf8<wchar_t>, wchar_t> codec;
+    std::vector<int> work = convert(open_text);
     for(unsigned i=0; i < work.size(); i++) {
-        work[i] = (work[i] + key[i % key.size()]) % alphaNum.size();
+        work[i] = (work[i] + key[i % key.size()]) %
+                  alphaNum.size();
     }
     return convert(work);
 }
-wstring modAlphaCipher::decrypt(const wstring& cipher_text)
+std::wstring modAlphaCipher::decrypt(const std::wstring&
+                                     cipher_text)
 {
-    vector<int> work = convert(cipher_text);
+    locale loc("ru_RU.UTF-8");
+    wstring_convert<codecvt_utf8<wchar_t>, wchar_t> codec;
+    std::vector<int> work = convert(cipher_text);
     for(unsigned i=0; i < work.size(); i++) {
-        work[i] = (work[i] + alphaNum.size() - key[i % key.size()]) % alphaNum.size();
+        work[i] = (work[i] + alphaNum.size() - key[i %
+                   key.size()]) % alphaNum.size();
     }
     return convert(work);
 }
-inline vector<int> modAlphaCipher::convert(const wstring& s)
+inline std::vector<int> modAlphaCipher::convert(const
+        std::wstring& s)
 {
-    vector<int> result;
+    locale loc("ru_RU.UTF-8");
+    wstring_convert<codecvt_utf8<wchar_t>, wchar_t> codec;
+    std::vector<int> result;
     for(auto c:s) {
         result.push_back(alphaNum[c]);
     }
     return result;
 }
-inline wstring modAlphaCipher::convert(const vector<int>& v)
+inline std::wstring modAlphaCipher::convert(const
+        std::vector<int>& v)
 {
-    wstring result;
+    locale loc("ru_RU.UTF-8");
+    wstring_convert<codecvt_utf8<wchar_t>, wchar_t> codec;
+    std::wstring result;
+    for(auto i:v) {
+        result.push_back(wnumAlpha[i]);
+    }
+    return result;
+}
     for(auto i:v) {
         result.push_back(numAlpha[i]);
     }
